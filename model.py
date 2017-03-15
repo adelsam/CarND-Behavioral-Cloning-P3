@@ -12,10 +12,10 @@ from keras.callbacks import EarlyStopping
 #Try Google's Network?
 from keras.applications.inception_v3 import InceptionV3
 
-training_samples = '/Users/adelman/Code/sdc/P3-files/driving_log_crop.csv'
+training_samples = '/Users/adelman/Code/sdc/P3-files/driving_log_w_bridge.csv'
 training_file = 'training.p'
 
-def read_training_data():
+def read_training_data(use_sides=False):
     if (os.path.exists(training_file)):
         with open(training_file, mode='rb') as f:
             training_data = pickle.load(f)
@@ -32,6 +32,15 @@ def read_training_data():
             for line in reader:
                 image = cv2.imread(line[0])
                 angle = float(line[3])
+
+                if use_sides:
+                    adj = 0.2
+                    left = cv2.imread(line[1])
+                    images.append(left)
+                    steering_angles.append(angle + adj)
+                    right = cv2.imread(line[2])
+                    images.append(right)
+                    steering_angles.append(angle - adj)
 
                 images.append(image)
                 steering_angles.append(angle)
@@ -78,7 +87,7 @@ def build_model():
 
 #Main application
 def main():
-    X_train, y_train = read_training_data()
+    X_train, y_train = read_training_data(use_sides=True)
 
     model = build_model()
 
