@@ -11,53 +11,40 @@ from keras.callbacks import EarlyStopping
 
 #Try Google's Network?
 from keras.applications.inception_v3 import InceptionV3
+root_folder = '/Users/adelman/Code/sdc/P3-files/'
+training_samples = root_folder + 'driving_log_10.csv'
 
-training_samples = '/Users/adelman/Code/sdc/P3-files/driving_log_w_bridge.csv'
-training_file = 'training.p'
+def get_path(local_path):
+    return root_folder + '/'.join(local_path.split('/')[6:])
 
 def read_training_data(use_sides=False):
-    if (os.path.exists(training_file)):
-        with open(training_file, mode='rb') as f:
-            training_data = pickle.load(f)
-        X_train = training_data['x']
-        y_train = training_data['y']
-        print('read file.')
-    else:
-        #file format is [center_img, left_img, right_img,
-        # steering_angle, throttle, break, speed]
-        steering_angles = []
-        images = []
-        with open(training_samples) as csvfile:
-            reader = csv.reader(csvfile)
-            for line in reader:
-                image = cv2.imread(line[0])
-                angle = float(line[3])
+    #file format is [center_img, left_img, right_img,
+    # steering_angle, throttle, break, speed]
+    steering_angles = []
+    images = []
+    with open(training_samples) as csvfile:
+        reader = csv.reader(csvfile)
+        for line in reader:
+            image = cv2.imread(get_path(line[0]))
+            angle = float(line[3])
 
-                if use_sides:
-                    adj = 0.2
-                    left = cv2.imread(line[1])
-                    images.append(left)
-                    steering_angles.append(angle + adj)
-                    right = cv2.imread(line[2])
-                    images.append(right)
-                    steering_angles.append(angle - adj)
+            if use_sides:
+                adj = 0.2
+                left = cv2.imread(get_path(line[1]))
+                images.append(left)
+                steering_angles.append(angle + adj)
+                right = cv2.imread(get_path(line[2]))
+                images.append(right)
+                steering_angles.append(angle - adj)
 
-                images.append(image)
-                steering_angles.append(angle)
-                images.append(np.fliplr(image))
-                steering_angles.append(-angle)
+            images.append(image)
+            steering_angles.append(angle)
+            images.append(np.fliplr(image))
+            steering_angles.append(-angle)
 
-        # convert to numpy array
-        X_train = np.asarray(images)
-        y_train = np.asarray(steering_angles)
-
-        training_data = {}
-        training_data['x'] = X_train
-        training_data['y'] = y_train
-        with open(training_file, mode='wb') as f:
-            pickle.dump(training_data, f)
-        print('wrote file.')
-
+    # convert to numpy array
+    X_train = np.asarray(images)
+    y_train = np.asarray(steering_angles)
     return X_train, y_train
 
 
@@ -94,7 +81,7 @@ def main():
     model = build_model()
 
     #Quality Callback
-    cb = EarlyStopping(monitor='val_loss', min_delta=.01, patience=1, verbose=1, mode='auto')
+    cb = EarlyStopping(monitor='val_loss', min_delta=.005, patience=1, verbose=1, mode='auto')
 
     model.fit(X_train, y_train, validation_split=0.2, shuffle=True, callbacks=[cb], nb_epoch=5)
     model.save('model.h5')
