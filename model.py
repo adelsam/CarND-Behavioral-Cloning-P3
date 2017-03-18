@@ -1,16 +1,11 @@
 import csv
 import cv2
 import numpy as np
-import pickle
-import os
 from keras.models import Sequential
-from keras.layers.core import Dense, Activation, Flatten, Dropout, Lambda
+from keras.layers.core import Dense, Flatten, Lambda
 from keras.layers.convolutional import Convolution2D, Cropping2D
-from keras.layers.pooling import MaxPooling2D
 from keras.callbacks import EarlyStopping
 
-#Try Google's Network?
-from keras.applications.inception_v3 import InceptionV3
 root_folder = '/Users/adelman/Code/sdc/P3-files/'
 training_samples = root_folder + 'driving_log_10.csv'
 
@@ -53,12 +48,13 @@ def build_model():
     Build a compiled Keras model to process the input X (track images) and return an output y (steering angle)
     :return: a Keras model
     '''
-    # Use David Silver's simple model to get something working
+    # Adapted from https://devblogs.nvidia.com/parallelforall/deep-learning-self-driving-cars/
     model = Sequential()
 
     # Pre-processing
     model.add(Lambda(lambda x : x/255.-.5, input_shape=(160,320,3)))
     model.add(Cropping2D(cropping=((70, 25), (0, 0))))
+
     model.add(Convolution2D(24, 5, 5, subsample=(2,2), activation='relu'))
     model.add(Convolution2D(36, 5, 5, subsample=(2,2), activation='relu'))
     model.add(Convolution2D(48, 5, 5, subsample=(2,2), activation='relu'))
