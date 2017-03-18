@@ -37,6 +37,7 @@ My project includes the following files:
 * drive.py for driving the car in autonomous mode
 * model.h5 containing a trained convolution neural network 
 * writeup_report.md or writeup_report.pdf summarizing the results
+* video.mp4 video of model driving one complete lap of the first track
 
 ####2. Submission includes functional code
 Using the Udacity provided simulator and my drive.py file, the car can be driven autonomously around the track by executing 
@@ -137,7 +138,7 @@ this because for the simulation, the model is only fed center camera images, so 
 primarily from this perspective.  I could have also dropped 50% of the side-camera images.
 
 I used the shuffle and validation_split parameters of Keras model's fit function to randomly shuffle the images used for training
-and reserve 20% of the data for validation.  Using a separate test and validation set is another way to help prevent overfitting int he model.
+and reserve 20% of the data for validation.  This is another way to help prevent over-fitting in the model.
 
 When I was training on my local computer, I used the Keras EarlyStopping callback to stop training when the rate of improvement
 in the validation loss began to decrease.  I found that the loss started to flatten out very quickly, usually after 2 or 3 Epocs.
