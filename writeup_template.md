@@ -62,6 +62,10 @@ connected layers.
 Each convolutional layers utilizes a RELU activation function to introduce nonlinearity (code line 58-62), 
 and the data is normalized in the model using a Keras lambda layer (code line 55).
 
+In addition to the normalization, I also used the Keras Cropping2D filter to focus the network on the bottom portion of the 
+image.  This is primarily where the road information comes from and helped cut out noise from the sky and background that
+we don't want the model to train on.
+
 ####2. Attempts to reduce overfitting in the model
 
 I used training data from multiple runs around the track, including running backwards around the track to try and prevent overfitting.
