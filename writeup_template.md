@@ -116,9 +116,6 @@ The final model architecture (model.py lines 58-67) consisted of a convolution n
 once I had a larger test data set I was able to increase the number of neurons in the second-to-last layer from 10 to 14 and
 that resulted in slightly more searching, but overall more accurate driving from the model.
 
-
-![alt text][image1]
-
 #### 3. Creation of the Training Set & Training Process
 
 To capture good driving behavior, I first recorded one lap on track one using center lane driving. 
